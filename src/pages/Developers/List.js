@@ -33,7 +33,9 @@ const List = () => {
   }
 
   function searchDeveloper() {
-    api.get('/developers/?nome=' + textSearch, {})
+    const url = textSearch ? '/?nome=' + textSearch : '';
+
+    api.get('/developers' + url, {})
       .then(response => {
         setLoading(false);
         setDevelopers(response.data);
