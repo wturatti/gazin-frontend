@@ -1,5 +1,7 @@
 # Gazin - FrontEnd
 
+Aplicação criada em ReactJS.
+
 Para criação da aplicação, basta efetuar um clone deste repositório. Em seguida, acessar o repositório onde foi realizado o clone e executar os seguintes comandos:
 
 ### `yarn install`
