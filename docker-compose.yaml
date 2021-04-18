@@ -1,0 +1,18 @@
+version: "3.3"
+services:
+  application:
+    build:
+      context: .
+    image: gazin-frontend
+    container_name: gazin-frontend
+    volumes:
+      - /home/app
+    ports:
+      - "3000:3000"
+    networks:
+      - gazin-network
+
+networks:
+  gazin-network:
+volumes:
+  gazinpgdata:

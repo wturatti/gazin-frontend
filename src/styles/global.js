@@ -19,9 +19,9 @@ export default createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
-  a: {
-      textDecoration: 'none';
-      color: 'inherit';
-    }
+  a:-webkit-any-link {
+    text-decoration: none;
+    color: inherit;
+  }
 
 `;

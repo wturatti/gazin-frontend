@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useParams, useHistory } from 'react-router-dom';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import Layout from '../Layout/Layout';
@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import { useToasts } from 'react-toast-notifications';
 
 const validateForm = yup.object({
   nome: yup.string().required("Nome é obrigatório"),
@@ -20,15 +21,36 @@ const validateForm = yup.object({
 });
 
 const Form = () => {
+  let { id } = useParams();
+  const [dataDeveloper, setDataDeveloper] = useState([]);
+  const [idDeveloper, setIdDeveloper] = useState([]);
+  const { addToast } = useToasts();
+  const history = useHistory();
+
+  useEffect(async () => {
+    if (id) {
+      await api.get('/developers/' + id)
+        .then(response => {
+          setDataDeveloper(response.data);
+          setIdDeveloper(id);
+        })
+        .catch(error => {
+          addToast('Erro ao carregar dados do desenvolvedor.', { appearance: 'error', autoDismiss: true });
+          history.push("/");
+        });
+    }
+  }, [id]);
+
   const formik = useFormik({
     initialValues: {
-      nome: '',
-      sexo: '',
-      idade: '',
-      hobby: '',
-      datanascimento: ''
+      nome: dataDeveloper.nome ? dataDeveloper.nome : '',
+      sexo: dataDeveloper.sexo ? dataDeveloper.sexo : '',
+      idade: dataDeveloper.idade ? dataDeveloper.idade : '',
+      hobby: dataDeveloper.hobby ? dataDeveloper.hobby : '',
+      datanascimento: dataDeveloper.datanascimento ? dataDeveloper.datanascimento : ''
     },
     validationSchema: validateForm,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       const data = {
         nome: values.nome,
@@ -38,14 +60,24 @@ const Form = () => {
         datanascimento: values.datanascimento
       }
 
-      await api.post('/developers', data)
-        .then(response => {
-
-        })
-        .catch(error => {
-
-        });
-      //alert(JSON.stringify(values, null, 2));
+      if (idDeveloper > 0) {
+        await api.put('/developers/' + idDeveloper, data)
+          .then(response => {
+            addToast('Dados atualizados.', { appearance: 'success', autoDismiss: true });
+          })
+          .catch(error => {
+            addToast('Erro ao atualizar dados.', { appearance: 'error', autoDismiss: true });
+          });
+      } else {
+        await api.post('/developers', data)
+          .then(response => {
+            setIdDeveloper(response.data);
+            addToast('Cadastro efetuado.', { appearance: 'success', autoDismiss: true });
+          })
+          .catch(error => {
+            addToast('Erro ao efetuar o cadastro.', { appearance: 'error', autoDismiss: true });
+          });
+      }
     },
   });
 

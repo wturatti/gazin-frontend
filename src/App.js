@@ -14,6 +14,7 @@ const App = () => {
           <Switch>
             <Route path='/' exact component={List} />
             <Route path='/new' component={Form} />
+            <Route path='/edit/:id' component={Form} />
           </Switch>
         </BrowserRouter>
       </ToastProvider>
